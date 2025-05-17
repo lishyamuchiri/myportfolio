@@ -47,11 +47,11 @@ const Certifications: React.FC = () => {
       id: 3,
       name: "Web Development Bootcamp",
       issuer: "eMobilis",
-      date: "2023"
+      date: "2024"
     },
     {
       id: 4,
-      name: "Blockchain Development",
+      name: "Front-end Development",
       issuer: "Africa Agility",
       date: "2024"
     },
@@ -59,7 +59,7 @@ const Certifications: React.FC = () => {
       id: 5,
       name: "Python Programming",
       issuer: "Power Learn Project (PLP)",
-      date: "2023"
+      date: "2025"
     }
   ];
 

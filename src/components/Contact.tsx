@@ -22,31 +22,48 @@ const Contact: React.FC = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus({
-        success: true,
-        message: "Thank you! Your message has been sent successfully."
-      });
-      
-      // Reset form after submission
-      setFormData({
-        name: '',
-        email: '',
-        message: ''
-      });
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 5000);
-    }, 1500);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  // 1. Prepare form data in Netlify's required format
+  const formPayload = {
+    "form-name": "contact",  // Must match your form's name attribute
+    name: formData.name,
+    email: formData.email,
+    message: formData.message
   };
+
+  try {
+    // 2. Send to Netlify's servers
+    const response = await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formPayload).toString()
+    });
+
+    // 3. Handle response
+    if (!response.ok) throw new Error("Network response was not ok");
+    
+    setSubmitStatus({
+      success: true,
+      message: "Thank you! Your message has been sent successfully."
+    });
+    
+    // 4. Reset form
+    setFormData({ name: "", email: "", message: "" });
+
+  } catch (error) {
+    setSubmitStatus({
+      success: false,
+      message: "Oops! Something went wrong. Please try again later."
+    });
+  } finally {
+    setIsSubmitting(false);
+    // 5. Clear status message after 5 seconds
+    setTimeout(() => setSubmitStatus(null), 5000);
+  }
+};
 
   return (
     <section id="contact" className="py-20 bg-slate-50 dark:bg-slate-800 transition-colors">
@@ -132,7 +149,14 @@ const Contact: React.FC = () => {
               <div className="bg-white dark:bg-slate-900 rounded-lg p-8 shadow-md">
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Send Me a Message</h3>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form 
+                name ="contact"
+                data-netlify="true"
+                onSubmit={handleSubmit}
+                className="space-y-6">
+                  {}
+                  <input type="hidden" name="form-name" value="contact" />
+                  {/* Hidden input to prevent spam */}
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Name
@@ -150,6 +174,7 @@ const Contact: React.FC = () => {
                   </div>
                   
                   <div>
+                    
                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Email
                     </label>
