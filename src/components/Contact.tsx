@@ -27,41 +27,32 @@ const Contact: React.FC = () => {
   setIsSubmitting(true);
 
   // 1. Prepare form data in Netlify's required format
-  const formPayload = {
-    "form-name": "contact",  // Must match your form's name attribute
-    name: formData.name,
-    email: formData.email,
-    message: formData.message
-  };
+   const formData = new FormData(e.currentTarget as HTMLFormElement);
+  const searchParams = new URLSearchParams();
+
+  // Convert FormData to URLSearchParams
+  formData.forEach((value, key) => {
+    searchParams.append(key, value.toString());
+  });
 
   try {
     // 2. Send to Netlify's servers
     const response = await fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(formPayload).toString()
+      body: searchParams,
     });
 
     // 3. Handle response
-    if (!response.ok) throw new Error("Network response was not ok");
-    
-    setSubmitStatus({
-      success: true,
-      message: "Thank you! Your message has been sent successfully."
-    });
-    
-    // 4. Reset form
-    setFormData({ name: "", email: "", message: "" });
-
+    if (!response.ok) throw new Error("Submission failed");
+    window.location.href = "/success.html"; // Optional success page
   } catch (error) {
     setSubmitStatus({
       success: false,
-      message: "Oops! Something went wrong. Please try again later."
+      message: "Submission failed. Please email me directly at lishyamuchiri@gmail.com",
     });
   } finally {
     setIsSubmitting(false);
-    // 5. Clear status message after 5 seconds
-    setTimeout(() => setSubmitStatus(null), 5000);
   }
 };
 
@@ -151,11 +142,14 @@ const Contact: React.FC = () => {
                 
                 <form 
                 name ="contact"
+                method = "POST"
                 data-netlify="true"
+                netlifly-honeypot= "bot-field"
                 onSubmit={handleSubmit}
-                className="space-y-6">
-                  {}
+                className="space-y-6" 
+                >
                   <input type="hidden" name="form-name" value="contact" />
+                  <input type="hidden" name="bot-field" />
                   {/* Hidden input to prevent spam */}
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
