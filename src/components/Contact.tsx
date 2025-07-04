@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Github, Linkedin } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+
+// Replace with your actual EmailJS credentials
+const YOUR_SERVICE_ID = 'service_zx2ztrw';
+const YOUR_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+const YOUR_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -7,13 +13,13 @@ const Contact: React.FC = () => {
     email: '',
     message: ''
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     success?: boolean;
     message?: string;
   } | null>(null);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -21,144 +27,61 @@ const Contact: React.FC = () => {
       [name]: value
     }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null); // Reset previous status
 
-  // 1. Prepare form data in Netlify's required format
-   const formData = new FormData(e.currentTarget as HTMLFormElement);
-  const searchParams = new URLSearchParams();
+    try {
+      const response = await emailjs.send(
+        YOUR_SERVICE_ID,
+        YOUR_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+        },
+        YOUR_PUBLIC_KEY
+      );
 
-  // Convert FormData to URLSearchParams
-  formData.forEach((value, key) => {
-    searchParams.append(key, value.toString());
-  });
-
-  try {
-    // 2. Send to Netlify's servers
-    const response = await fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: searchParams,
-    });
-
-    // 3. Handle response
-    if (!response.ok) throw new Error("Submission failed");
-    window.location.href = "/success.html"; // Optional success page
-  } catch (error) {
-    setSubmitStatus({
-      success: false,
-      message: "Submission failed. Please email me directly at lishyamuchiri@gmail.com",
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      console.log('SUCCESS!', response.status, response.text);
+      setSubmitStatus({ success: true, message: 'Message sent successfully!' });
+      setFormData({ name: '', email: '', message: '' }); // Clear the form
+    } catch (error: any) {
+      console.error('FAILED...', error);
+      setSubmitStatus({ success: false, message: 'Failed to send message. Please email me directly at lishyamuchiri@gmail.com' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="contact" className="py-20 bg-slate-50 dark:bg-slate-800 transition-colors">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Contact Me</h2>
-          <div className="w-20 h-1 bg-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-700 dark:text-slate-300 max-w-2xl mx-auto">
-            Let's connect and discuss how we can work together on your next project.
-          </p>
-        </div>
-        
+        {/* ... rest of your component ... */}
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
-              <div className="bg-white dark:bg-slate-900 rounded-lg p-8 shadow-md h-full">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Get In Touch</h3>
-                
-                <div className="space-y-6">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400">
-                      <Mail size={20} />
-                    </div>
-                    <div className="ml-4">
-                      <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-1">Email</h4>
-                      <a 
-                        href="mailto:lishyamuchiri@gmail.com" 
-                        className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        lishyamuchiri@gmail.com
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="ml-4">
-                      <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-1">Location</h4>
-                      <p className="text-slate-600 dark:text-slate-400">Nairobi, Kenya</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400">
-                      <Phone size={20} />
-                    </div>
-                    <div className="ml-4">
-                      <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-1">Phone</h4>
-                      <p className="text-slate-600 dark:text-slate-400">Available upon request</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-10">
-                  <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Connect With Me</h4>
-                  <div className="flex space-x-4">
-                    <a 
-                      href="https://github.com/username" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="bg-slate-200 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-blue-900 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-3 rounded-full transition-colors"
-                      aria-label="GitHub"
-                    >
-                      <Github size={20} />
-                    </a>
-                    <a 
-                      href="https://linkedin.com/in/username" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="bg-slate-200 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-blue-900 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-3 rounded-full transition-colors"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin size={20} />
-                    </a>
-                  </div>
-                </div>
-              </div>
+              {/* ... contact info ... */}
             </div>
-            
+
             <div>
               <div className="bg-white dark:bg-slate-900 rounded-lg p-8 shadow-md">
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Send Me a Message</h3>
-                
-                <form 
-                name ="contact"
-                method = "POST"
-                data-netlify="true"
-                netlifly-honeypot= "bot-field"
-                onSubmit={handleSubmit}
-                className="space-y-6" 
+
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
                 >
-                  <input type="hidden" name="form-name" value="contact" />
-                  <input type="hidden" name="bot-field" />
-                  {/* Hidden input to prevent spam */}
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Name
                     </label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      name="name" 
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
                       value={formData.name}
                       onChange={handleChange}
                       required
@@ -166,16 +89,16 @@ const Contact: React.FC = () => {
                       placeholder="Your name"
                     />
                   </div>
-                  
+
                   <div>
-                    
+
                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Email
                     </label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      name="email" 
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -183,15 +106,15 @@ const Contact: React.FC = () => {
                       placeholder="Your email"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Message
                     </label>
-                    <textarea 
-                      id="message" 
-                      name="message" 
-                      rows={5} 
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
                       value={formData.message}
                       onChange={handleChange}
                       required
@@ -199,13 +122,13 @@ const Contact: React.FC = () => {
                       placeholder="Your message"
                     ></textarea>
                   </div>
-                  
-                  <button 
-                    type="submit" 
+
+                  <button
+                    type="submit"
                     disabled={isSubmitting}
                     className={`w-full px-6 py-3 rounded-lg flex items-center justify-center font-medium text-white transition-all ${
-                      isSubmitting 
-                        ? 'bg-blue-400 cursor-not-allowed' 
+                      isSubmitting
+                        ? 'bg-blue-400 cursor-not-allowed'
                         : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
                     }`}
                   >
@@ -224,11 +147,11 @@ const Contact: React.FC = () => {
                       </>
                     )}
                   </button>
-                  
+
                   {submitStatus && (
                     <div className={`mt-4 p-3 rounded-lg ${
-                      submitStatus.success 
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' 
+                      submitStatus.success
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                         : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
                     }`}>
                       {submitStatus.message}
@@ -239,7 +162,7 @@ const Contact: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Let's build something amazing!</h3>
           <p className="text-slate-700 dark:text-slate-300">

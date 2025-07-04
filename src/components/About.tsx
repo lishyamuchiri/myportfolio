@@ -1,16 +1,16 @@
 import React from 'react';
 import { Code, Server, Database, Cpu } from 'lucide-react';
+import profileImage from '../assets/lish.png';
 
 const About: React.FC = () => {
   const skills = [
-    { category: 'Frontend', items: ['HTML/CSS', 'JavaScript', 'React', 'Bootstrap'], icon: <Code className="w-5 h-5 text-blue-600" /> },
-    { category: 'Backend', items: ['Django', 'Python', 'MySQL'], icon: <Server className="w-5 h-5 text-emerald-600" /> },
-    { category: 'Blockchain', items: ['Smart Contracts', 'Web3', 'Avalanche'], icon: <Database className="w-5 h-5 text-purple-600" /> },
-    { category: 'Tools', items: ['Git', 'GitHub', 'Adobe Premiere Pro'], icon: <Cpu className="w-5 h-5 text-orange-600" /> }
+    { category: 'Frontend', items: ['HTML/CSS', 'JavaScript', 'React', 'Node', 'Bootstrap', 'Tailwind'], icon: <Code className="w-5 h-5 text-blue-600" /> },
+    { category: 'Backend', items: ['Django', 'Python', 'MySQL', 'Mongodb', 'Supabase'], icon: <Server className="w-5 h-5 text-emerald-600" /> },
+    { category: 'Tools', items: ['Visual Studio Code', 'Postman', 'Git', 'GitHub', 'Figma', 'Adobe Premiere Pro', 'Photoshop', 'Canva'], icon: <Cpu className="w-5 h-5 text-orange-600" /> }
   ];
 
   return (
-    <section id="about" className="py-20 bg-white dark:bg-slate-900 transition-colors">
+    <section id="about" className="pt-20 md:pt-16 pb-20 bg-white dark:bg-slate-900 transition-colors">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">About Me</h2>
@@ -19,15 +19,30 @@ const About: React.FC = () => {
         
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <div className="md:col-span-1">
-              <div className="bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden shadow-md transition-transform hover:shadow-lg hover:-translate-y-1">
-                <img 
-                  src="https://images.pexels.com/photos/5717479/pexels-photo-5717479.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
-                  alt="Professional headshot" 
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </div>
+           <div className="md:col-span-1 flex justify-center items-start md:items-start md:pt-8"> {/* Added md:pt-8 */}
+  <div className="relative group">
+    <div className="
+      absolute -inset-1 bg-gradient-to-r from-blue-500 to-emerald-500
+      rounded-full blur-md opacity-75 group-hover:opacity-100
+      transition-all duration-300 group-hover:blur-lg
+      animate-tilt
+    "></div>
+    <div className="
+      relative w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden
+      shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10
+      transition-all duration-500 ease-in-out
+      group-hover:shadow-2xl group-hover:shadow-blue-500/30
+      group-hover:scale-105
+      border-4 border-white dark:border-slate-800
+    ">
+      <img 
+        src={profileImage} 
+        alt="Professional headshot" 
+        className="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+</div>
             
             <div className="md:col-span-2">
               <div className="prose dark:prose-invert max-w-none">
